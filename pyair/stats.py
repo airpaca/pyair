@@ -9,7 +9,6 @@
 import numpy as np
 import numpy.ma as ma
 import pandas as pd
-import scipy.stats as stats
 
 
 def find(condition):
@@ -17,14 +16,6 @@ def find(condition):
     """
 
     return np.ravel(np.nonzero(condition))
-
-
-def to_quantile(a, nb=5):
-    """Returns the nb quantiles of the list a
-    """
-    ind = np.linspace(0, 100, nb)
-    b = a.compressed()
-    return [stats.scoreatpercentile(b, i) for i in ind]
 
 
 def df_quantile(df, nb=100):

@@ -12,7 +12,6 @@ import pandas as pd
 import pandas.io.sql as psql
 import datetime as dt
 
-
 INVALID_CODES = ['C', 'D', 'I', 'M', 'Z', 'B', 'N', 'X', 'G', 'H']
 MISSING_CODE = 'N'
 
@@ -125,12 +124,10 @@ class XAIR:
     m.describe()
     """
 
-
     def __init__(self, user, pwd, adr, port=1521, base='N', initial_connect=True):
         self._ORA_FULL = "{0}/{1}@{2}:{3}/{4}".format(user, pwd, adr, port, base)
         if initial_connect:
             self._connect()
-
 
     def _connect(self):
         """
@@ -146,10 +143,8 @@ class XAIR:
             print "Erreur: %s" % (e)
             raise cx_Oracle.Error, 'Echec de connexion'
 
-
     def reconnect(self):
         self._connect()
-
 
     def disconnect(self):
         """
@@ -157,12 +152,10 @@ class XAIR:
         """
         self._close()
 
-
     def _close(self):
         self.cursor.close()
         self.conn.close()
         print('XAIR: Connexion fermée')
-
 
     def liste_parametres(self, parametre=None):
         """
@@ -180,7 +173,6 @@ class XAIR:
         NOPOL AS CODE
         FROM NOM_MESURE %s ORDER BY CCHIM""" % condition
         return psql.read_sql(_sql, self.conn)
-
 
     def liste_mesures(self, reseau=None, station=None, parametre=None, mesure=None):
         """
@@ -236,7 +228,6 @@ class XAIR:
 
         return psql.read_sql(_sql, self.conn)
 
-
     def detail_df(self, df):
         """
         Renvoie les caractéristiques des mesures d'un dataframe.
@@ -248,7 +239,6 @@ class XAIR:
         Les mêmes informations que liste_mesure()
         """
         return self.liste_mesures(mesure=df.columns.tolist())
-
 
     def liste_stations(self, station=None, detail=False):
         """
@@ -285,7 +275,6 @@ class XAIR:
         ORDER BY NSIT""" % (select, condition)
         return psql.read_sql(_sql, self.conn)
 
-
     def liste_reseaux(self):
         """Liste des sous-réseaux de mesure"""
 
@@ -294,7 +283,6 @@ class XAIR:
         NOM_RES AS LIBELLE
         FROM RESEAUDEF ORDER BY NOM_COURT_RES"""
         return psql.read_sql(_sql, self.conn)
-
 
     def liste_campagnes(self, campagne=None):
         """
@@ -320,19 +308,16 @@ class XAIR:
         %s ORDER BY DATEDEB DESC""" % condition
         return psql.read_sql(_sql, self.conn)
 
-
     def liste_reseaux_indices(self):
         """Liste des réseaux d'indices ATMO"""
 
         _sql = """SELECT NOM_AGGLO AS GROUPE_ATMO, NOM_COURT_GRP FROM GROUPE_ATMO"""
         return psql.read_sql(_sql, self.conn)
 
-
     def liste_sites_prelevement(self):
         """Liste les sites de prélèvements manuels"""
         _sql = """SELECT NSIT, LIBELLE FROM SITE_PRELEVEMENT ORDER BY NSIT"""
         return psql.read_sql(_sql, self.conn)
-
 
     def get_mesures(self, mes, debut=None, fin=None, freq='H', format=None,
                     dayfirst=False, brut=False):
@@ -396,7 +381,7 @@ class XAIR:
         # Reformatage du champ des noms de mesure
         mes = _format(mes)
 
-        #Analyse des champs dates
+        # Analyse des champs dates
         debut = to_date(debut, dayfirst, format)
         if not fin:
             fin = debut
@@ -404,7 +389,7 @@ class XAIR:
             fin = to_date(fin, dayfirst, format)
 
 
-        #La freq de temps Q n'existe pas, on passe d'abord par une fréquence 15 minutes
+        # La freq de temps Q n'existe pas, on passe d'abord par une fréquence 15 minutes
         if freq in ('Q', 'T'):
             freq = '15T'
 
@@ -443,17 +428,17 @@ class XAIR:
             fin_db = fin
         else:
             champ_date = 'M_DATE'
-            #Pour les freq='M' et 'A', la table contient toutes les valeurs sur une
-            #année entière. Pour ne pas perturber la récupération si on passait des
-            #dates en milieu d'année, on transforme les dates pour être calées en début
-            #et en fin d'année. Le recadrage se fera plus loin dans le code, lors du reindex
+            # Pour les freq='M' et 'A', la table contient toutes les valeurs sur une
+            # année entière. Pour ne pas perturber la récupération si on passait des
+            # dates en milieu d'année, on transforme les dates pour être calées en début
+            # et en fin d'année. Le recadrage se fera plus loin dans le code, lors du reindex
             debut_db = debut.replace(month=1, day=1, hour=0, minute=0)
             fin_db = fin.replace(month=12, day=31, hour=23, minute=0)
 
         debut_db = debut_db.strftime("%Y-%m-%d")
         fin_db = fin_db.strftime("%Y-%m-%d")
 
-        #Récupération des valeurs et codes d'états associés
+        # Récupération des valeurs et codes d'états associés
         _sql = """SELECT
         IDENTIFIANT as "id",
         {champ_date} as "date",
@@ -471,37 +456,37 @@ class XAIR:
                                                          debut=debut_db,
                                                          fin=fin_db)
         ## TODO : A essayer quand la base sera en version 11g
-        #_sql = """SELECT *
-        #FROM ({selection})
-        #UNPIVOT (IDENTIFIANT FOR VAL IN ({champ_as}))""".format(selection=_sql,
-        #champ_date=champ_date,
-        #champ_as=champ_as)
+        # _sql = """SELECT *
+        # FROM ({selection})
+        # UNPIVOT (IDENTIFIANT FOR VAL IN ({champ_as}))""".format(selection=_sql,
+        # champ_date=champ_date,
+        # champ_as=champ_as)
 
-        #On recupere les valeurs depuis la freq dans une dataframe
+        # On recupere les valeurs depuis la freq dans une dataframe
         rep = psql.read_sql(_sql, self.conn)
 
-        #On créait un multiindex pour manipuler plus facilement le dataframe
+        # On créait un multiindex pour manipuler plus facilement le dataframe
         df = rep.set_index(['id', 'date'])
 
-        #Stack le dataframe pour mettre les colonnes en lignes, en supprimant la colonne des états
-        #puis on unstack suivant l'id pour avoir les polluants en colonnes
+        # Stack le dataframe pour mettre les colonnes en lignes, en supprimant la colonne des états
+        # puis on unstack suivant l'id pour avoir les polluants en colonnes
         etats = df['etat']
         df = df.drop('etat', axis=1)
         df_stack = df.stack(dropna=False)
         df = df_stack.unstack('id')
 
-        #Calcul d'un nouvel index avec les bonnes dates. L'index du df est
-        #formé du champ date à minuit, et des noms des champs de valeurs
-        #qui sont aliassés de 1 à 24 pour les heures, ... voir champ_val.
-        #On aggrève alors ces 2 valeurs pour avoir des dates alignées qu'on utilise alors comme index final
+        # Calcul d'un nouvel index avec les bonnes dates. L'index du df est
+        # formé du champ date à minuit, et des noms des champs de valeurs
+        # qui sont aliassés de 1 à 24 pour les heures, ... voir champ_val.
+        # On aggrève alors ces 2 valeurs pour avoir des dates alignées qu'on utilise alors comme index final
         index = create_index(df.index, freq)
         df.reset_index(inplace=True, drop=True)
         df['date'] = index
         df = df.set_index(['date'])
-        #Traitement des codes d'état
-        #On concatène les codes d'état pour chaque polluant
-        #etats = etats.sum(level=0)
-        #etats = pd.DataFrame(zip(*etats.apply(list)))
+        # Traitement des codes d'état
+        # On concatène les codes d'état pour chaque polluant
+        # etats = etats.sum(level=0)
+        # etats = pd.DataFrame(zip(*etats.apply(list)))
         etats = etats.unstack('id')
         etats.fillna(value=MISSING_CODE * diviseur, inplace=True)
         etats = etats.sum(axis=0)
@@ -509,22 +494,21 @@ class XAIR:
         etats.index = df.index
         etats.columns = df.columns
 
-        #Remplacement des valeurs aux dates manquantes par des NaN
+        # Remplacement des valeurs aux dates manquantes par des NaN
         dates_completes = date_range(debut, fin, freq)
         df = df.reindex(dates_completes)
         etats = etats.reindex(dates_completes)
 
-        #Invalidation par codes d'état
-        #Pour chaque code d'état, regarde si oui ou non il est invalidant en le remplacant par un booléen
+        # Invalidation par codes d'état
+        # Pour chaque code d'état, regarde si oui ou non il est invalidant en le remplacant par un booléen
         invalid = etats_to_invalid(etats)
 
         if not brut:
-            #dans le dataframe, masque toute valeur invalide par NaN
-            dfn = df.mask(invalid)  #DataFrame net
+            # dans le dataframe, masque toute valeur invalide par NaN
+            dfn = df.mask(invalid)  # DataFrame net
             return dfn
         else:
             return df, etats
-
 
     def get_manuelles(self, site, code_parametre, debut, fin, court=False):
         """
@@ -579,7 +563,6 @@ class XAIR:
         ORDER BY MESLA.NOPOL,MESLA.LIBELLE,PRELEV.DATE_DEB""" % (select, condition)
         return psql.read_sql(_sql, self.conn)
 
-
     def get_indices(self, res, debut, fin):
         """
         Récupération des indices ATMO pour un réseau donné.
@@ -608,18 +591,47 @@ class XAIR:
         df = df.reindex(dates_completes)
         return df
 
+    def get_indices_et_ssi(self, reseau, debut, fin, complet=True):
+        """Renvoie l'indice et les sous_indices
+        complet: renvoyer les complets ou les prévus
+        reseau: nom du réseau à renvoyer
+        debut: date de début à renvoyer
+        fin: date de fin à renvoyer
 
-        # def get_ss_indice():
-        #sql = """SELECT
-        #GRP.NOM_AGGLO,
-        #RES.NOPOL,
-        #RES.P_SS_INDICE,
-        #RES.P_SS_I_MES
-        #FROM RESULTAT_SS_INDICE RES
-        #INNER JOIN GROUPE_ATMO GRP USING (NOM_COURT_GRP)
-        #WHERE J_DATE=TO_DATE('2011-10-04', 'YYYY-MM-DD');"""
+        Renvoi : reseau, date, Indice, sous_ind NO2,PM10,O3,SO2
+        """
+        if complet:
+            i_str = "c_ind_diffuse"
+            ssi_str = "c_ss_indice"
+        else:
+            i_str = "p_ind_diffuse"
+            ssi_str = "p_ss_indice"
 
-    def get_SQLTXT(self, format_=1):
+        _sql = """SELECT
+                g.nom_agglo as "reseau",
+                i.j_date as "date",
+                max(case when i.{0}>0 then i.{0} else 0 end) indice,
+                max(case when n.cchim='NO2' then ssi.{1} else 0 end) no2,
+                max(case when n.cchim='PM10' then ssi.{1} else 0 end) pm10,
+                max(case when n.cchim='O3' then ssi.{1} else 0 end) o3,
+                max(case when n.cchim='SO2' then ssi.{1} else 0 end) so2
+        FROM resultat_indice i
+        INNER JOIN resultat_ss_indice ssi ON (i.nom_court_grp=ssi.nom_court_grp AND i.j_date=ssi.j_date)
+        INNER JOIN groupe_atmo g ON (i.nom_court_grp=g.nom_court_grp)
+        INNER JOIN nom_mesure n ON (ssi.nopol=n.nopol)
+        WHERE g.nom_agglo='{2}'
+        AND i.j_date BETWEEN
+        TO_DATE('{3}', 'YYYY-MM-DD') AND
+        TO_DATE('{4}', 'YYYY-MM-DD')
+        GROUP BY
+        g.nom_agglo,
+        i.j_date
+        ORDER BY i.j_date""".format(i_str, ssi_str, reseau, debut, fin)
+        df = psql.read_sql(_sql, self.conn)
+        df = df.set_index(['reseau', 'date'])
+        return df
+
+    def get_sqltext(self, format_=1):
         """retourne les requêtes actuellement lancées sur le serveur"""
 
         if format_ == 1:

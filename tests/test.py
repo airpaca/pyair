@@ -2,11 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 import os
-import xair
+from pyair import xair
+from pyair.reg import excel_synthese, o3, so2, no2, pm10
 import pandas as pd
 pd.set_option('line_width', 200)
-
-from reg import excel_synthese, o3, so2, no2, pm10
 
 
 DEBUT = '2012-01-01'
@@ -14,7 +13,7 @@ FIN = '2012-12-31'
 USER = 'XXXXX'
 PWD = 'XXXXX'
 ADR = '192.168.1.1'
-PATH = '/tmp/'  #chemin où enregistrer les fichiers excel
+PATH = '/tmp/'  # chemin où enregistrer les fichiers excel
 
 MES = [
     [so2, ['SO2_FO', 'SO2_GA', 'SO2_IP', 'SO2_PR'], 'H', 'reg_SO2.xls'],
@@ -30,7 +29,7 @@ def run():
         df = xr.get_mesures(mes, debut=DEBUT, fin=FIN, freq=freq, brut=False)
         excel_file = os.path.join(PATH, xls_name)
         excel_synthese(fct, df, excel_file)
-        #print_synthese(fct, df)
+        # print_synthese(fct, df)
     xr.close()
 
 if __name__ == "__main__":
