@@ -1,4 +1,20 @@
-# pyair
-For working with French air quality data and the Iseo XAIR database
+===========
+PyAir
+===========
 
-You can have a look at how to use it on http://pythonhosted.org//PyAir/ (in french for the moment)
+PyAir provides facilities :
+    - for the connection to the ISEO XAIR database, and for getting values/informations
+    - in the computation of Air Quality values for the French reglementation,
+
+
+
+Typical usage ::
+
+    #!/usr/bin/env python
+
+    import pyair
+    xr = pyair.xair.XAIR(user, pwd, ip, port, base)
+    df = xr.get_mesures(mes=["O3_AA", "O3_BB"])
+    pyair.reg.aot40_vegetation(df)
+
+Look at http://pythonhosted.org/PyAir/ for an example
