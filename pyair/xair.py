@@ -185,6 +185,7 @@ class XAIR:
         virgules ou en les mettant dans une liste/tuple/pandas.Series.
         Ainsi pour avoir la liste des mesures en vitesse et direction de vent:
         parametre="VV,DV" ou = ["VV", "DV"]
+        Les arguments sont combinés ensemble pour la sélection des mesures.
 
         Paramètres:
         reseau : nom du reseau dans lequel lister les mesures
@@ -194,24 +195,28 @@ class XAIR:
 
         """
 
-        condition = ""
+        tbreseau = ""
+        conditions = []
 
         if reseau:
             reseau = _format(reseau)
-            condition = """INNER JOIN RESEAUMES R USING (NOM_COURT_MES)
-            WHERE R.NOM_COURT_RES IN ('%s') """ % reseau
+            
+            tbreseau = """INNER JOIN RESEAUMES R USING (NOM_COURT_MES) """
+            conditions.append("""R.NOM_COURT_RES IN ('%s') """ % reseau)
 
         if parametre:
             parametre = _format(parametre)
-            condition = """WHERE N.CCHIM IN ('%s')""" % parametre
+            conditions.append("""N.CCHIM IN ('%s')""" % parametre)
 
         if station:
             station = _format(station)
-            condition = "WHERE S.IDENTIFIANT IN ('%s')" % station
+            conditions.append("""S.IDENTIFIANT IN ('%s')""" % station)
 
         if mesure:
             mesure = _format(mesure)
-            condition = "WHERE M.IDENTIFIANT IN ('%s')" % mesure
+            conditions.append("""M.IDENTIFIANT IN ('%s')""" % mesure)
+
+        condition = "WHERE %s" % " and ".join(conditions) if conditions else ""
 
         _sql = """SELECT
         M.IDENTIFIANT AS MESURE,
@@ -224,7 +229,8 @@ class XAIR:
         INNER JOIN NOM_MESURE N USING (NOPOL)
         INNER JOIN STATION S USING (NOM_COURT_SIT)
         %s
-        ORDER BY M.IDENTIFIANT""" % condition
+        %s
+        ORDER BY M.IDENTIFIANT""" % (tbreseau, condition)
 
         return psql.read_sql(_sql, self.conn)
 

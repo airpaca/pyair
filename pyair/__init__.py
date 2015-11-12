@@ -8,12 +8,13 @@ import stats
 import xair
 
 
-__version__ = "3.0.0"
+__version__ = "3.1.0"
 __author__ = "Lionel Roubeyrie"
 __email__ = "lroubeyrie@limair.asso.fr"
 __all__ = ['date', 'reg', 'stats', 'xair']
 __license__ = "GPL"
 __changes__ = {
+    '3.1.0': u"""- Evolution de la méthode 'list_mesures' pour la prise en compte des différentes critères de sélection des mesures.""",
     '3.0.0': u"""- Separation des modules en packages distincts : pyair, pyair_utils
     - Nettoyage des fichiers pour etre conforme avec PEP8
     - ajout de xair.indice_et_ssi pour récupérer les sous-indices et les polluants faisant l'indice global""",
