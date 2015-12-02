@@ -9,7 +9,7 @@ Facilités pour le calcul de données réglementaire
 import unicodedata
 import pandas as pd
 import pandas.tseries.offsets as pdoffset
-from StringIO import StringIO
+from io import StringIO
 
 
 class FreqException(Exception):
@@ -234,14 +234,14 @@ def no2(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Seuil de RI en moyenne H: 200u": depassement(df, valeur=200),
-           u"Seuil d'Alerte sur 3H consécutives: 400u": consecutive(df, valeur=400, sur=3),
-           u"Seuil d'Alerte sur 3J consécutifs: 200u": consecutive(df.resample('D', how='max'), valeur=200, sur=3),
-           u"Valeur limite pour la santé humaine 18H/A: 200u": depassement(df, valeur=200),
-           u"Valeur limite pour la santé humaine en moyenne A: 40u": depassement(df.resample('A', how='mean'),
+    res = {"Seuil de RI en moyenne H: 200u": depassement(df, valeur=200),
+           "Seuil d'Alerte sur 3H consécutives: 400u": consecutive(df, valeur=400, sur=3),
+           "Seuil d'Alerte sur 3J consécutifs: 200u": consecutive(df.resample('D', how='max'), valeur=200, sur=3),
+           "Valeur limite pour la santé humaine 18H/A: 200u": depassement(df, valeur=200),
+           "Valeur limite pour la santé humaine en moyenne A: 40u": depassement(df.resample('A', how='mean'),
                                                                                  valeur=40),
-           u"Objectif de qualité en moyenne A: 40u": depassement(df.resample('A', how='mean'), valeur=40),
-           u"Protection de la végétation en moyenne A: 30u": depassement(df.resample('A', how='mean'), valeur=30),
+           "Objectif de qualité en moyenne A: 40u": depassement(df.resample('A', how='mean'), valeur=40),
+           "Protection de la végétation en moyenne A: 30u": depassement(df.resample('A', how='mean'), valeur=30),
            }
 
     return polluant, res
@@ -275,12 +275,12 @@ def pm10(df):
     if not isinstance(df.index.freq, pdoffset.Day):
         raise FreqException("df doit être en jour.")
 
-    res = {u"Seuil de RI en moyenne J: 50u": depassement(df, valeur=50),
-           u"Seuil d'Alerte en moyenne J: 80u": depassement(df, valeur=80),
-           u"Valeur limite pour la santé humaine 35J/A: 50u": depassement(df, valeur=50),
-           u"Valeur limite pour la santé humaine en moyenne A: 40u": depassement(df.resample('A', how='mean'),
+    res = {"Seuil de RI en moyenne J: 50u": depassement(df, valeur=50),
+           "Seuil d'Alerte en moyenne J: 80u": depassement(df, valeur=80),
+           "Valeur limite pour la santé humaine 35J/A: 50u": depassement(df, valeur=50),
+           "Valeur limite pour la santé humaine en moyenne A: 40u": depassement(df.resample('A', how='mean'),
                                                                                  valeur=40),
-           u"Objectif de qualité en moyenne A: 30u": depassement(df.resample('A', how='mean'), valeur=30),
+           "Objectif de qualité en moyenne A: 30u": depassement(df.resample('A', how='mean'), valeur=30),
            }
 
     return polluant, res
@@ -317,13 +317,13 @@ def so2(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Seuil de RI en moyenne H: 300u": depassement(df, valeur=300),
-           u"Seuil d'Alerte sur 3H consécutives: 500u": depassement(df, valeur=500),
-           u"Valeur limite pour la santé humaine 24H/A: 350u": depassement(df, valeur=350),
-           u"Valeur limite pour la santé humaine 3J/A: 125u": depassement(df.resample('D', how='mean'), valeur=125),
-           u"Objectif de qualité en moyenne A: 50u": depassement(df.resample('A', how='mean'), valeur=50),
-           u"Protection de la végétation en moyenne A: 20u": depassement(df.resample('A', how='mean'), valeur=20),
-           u"Protection de la végétation du 01/10 au 31/03: 20u": depassement(
+    res = {"Seuil de RI en moyenne H: 300u": depassement(df, valeur=300),
+           "Seuil d'Alerte sur 3H consécutives: 500u": depassement(df, valeur=500),
+           "Valeur limite pour la santé humaine 24H/A: 350u": depassement(df, valeur=350),
+           "Valeur limite pour la santé humaine 3J/A: 125u": depassement(df.resample('D', how='mean'), valeur=125),
+           "Objectif de qualité en moyenne A: 50u": depassement(df.resample('A', how='mean'), valeur=50),
+           "Protection de la végétation en moyenne A: 20u": depassement(df.resample('A', how='mean'), valeur=20),
+           "Protection de la végétation du 01/10 au 31/03: 20u": depassement(
                df[(df.index.month <= 3) | (df.index.month >= 10)], valeur=20),
            }
 
@@ -355,7 +355,7 @@ def co(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Valeur limite pour la santé humaine sur 8H glissantes: 10000u": depassement(moyennes_glissantes(df, sur=8),
+    res = {"Valeur limite pour la santé humaine sur 8H glissantes: 10000u": depassement(moyennes_glissantes(df, sur=8),
                                                                                          valeur=10),
            }
 
@@ -392,12 +392,12 @@ def o3(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Seuil de RI sur 1H: 180u": depassement(df, valeur=180),
-           u"Seuil d'Alerte sur 1H: 240u": depassement(df, valeur=240),
-           u"Seuil d'Alerte sur 1H: 360u": depassement(df, valeur=360),
-           u"Seuil d'Alerte sur 3H consécutives: 240u": consecutive(df, valeur=240, sur=3),
-           u"Seuil d'Alerte sur 3H consécutives: 300u": consecutive(df, valeur=300, sur=3),
-           u"Objectif de qualité pour la santé humaine sur 8H glissantes: 120u": depassement(
+    res = {"Seuil de RI sur 1H: 180u": depassement(df, valeur=180),
+           "Seuil d'Alerte sur 1H: 240u": depassement(df, valeur=240),
+           "Seuil d'Alerte sur 1H: 360u": depassement(df, valeur=360),
+           "Seuil d'Alerte sur 3H consécutives: 240u": consecutive(df, valeur=240, sur=3),
+           "Seuil d'Alerte sur 3H consécutives: 300u": consecutive(df, valeur=300, sur=3),
+           "Objectif de qualité pour la santé humaine sur 8H glissantes: 120u": depassement(
                moyennes_glissantes(df, sur=8), valeur=120),
            }
 
@@ -430,8 +430,8 @@ def c6h6(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Objectif de qualité en moyenne A: 2u": depassement(df.resample('A', how='mean'), valeur=2),
-           u"Valeur limite pour la santé humaine en moyenne A: 5u": depassement(df.resample('A', how='mean'), valeur=5),
+    res = {"Objectif de qualité en moyenne A: 2u": depassement(df.resample('A', how='mean'), valeur=2),
+           "Valeur limite pour la santé humaine en moyenne A: 5u": depassement(df.resample('A', how='mean'), valeur=5),
            }
 
     return polluant, res
@@ -463,8 +463,8 @@ def pb(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Objectif de qualité en moyenne A: 0.25u": depassement(df.resample('A', how='mean'), valeur=0.25),
-           u"Valeur limite pour la santé humaine en moyenne A: 0.5u": depassement(df.resample('A', how='mean'),
+    res = {"Objectif de qualité en moyenne A: 0.25u": depassement(df.resample('A', how='mean'), valeur=0.25),
+           "Valeur limite pour la santé humaine en moyenne A: 0.5u": depassement(df.resample('A', how='mean'),
                                                                                   valeur=0.5),
            }
 
@@ -495,7 +495,7 @@ def arsenic(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Valeur cible en moyenne A: 6u": depassement(df.resample('A', how='mean'), valeur=6),
+    res = {"Valeur cible en moyenne A: 6u": depassement(df.resample('A', how='mean'), valeur=6),
            }
 
     return polluant, res
@@ -526,7 +526,7 @@ def cadmium(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Valeur cible en moyenne A: 5u": depassement(df.resample('A', how='mean'), valeur=5),
+    res = {"Valeur cible en moyenne A: 5u": depassement(df.resample('A', how='mean'), valeur=5),
            }
 
     return polluant, res
@@ -557,7 +557,7 @@ def nickel(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Valeur cible en moyenne A: 20u": depassement(df.resample('A', how='mean'), valeur=20),
+    res = {"Valeur cible en moyenne A: 20u": depassement(df.resample('A', how='mean'), valeur=20),
            }
 
     return polluant, res
@@ -588,7 +588,7 @@ def bap(df):
     if not isinstance(df.index.freq, pdoffset.Hour):
         raise FreqException("df doit être en heure.")
 
-    res = {u"Valeur cible en moyenne A: 1u": depassement(df.resample('A', how='mean'), valeur=1),
+    res = {"Valeur cible en moyenne A: 1u": depassement(df.resample('A', how='mean'), valeur=1),
            }
 
     return polluant, res
@@ -612,20 +612,20 @@ def print_synthese(fct, df):
     res_count = dict()
 
     polluant, res = fct(df)
-    print(u"\nPour le polluant: %s" % polluant)
+    print("\nPour le polluant: %s" % polluant)
 
-    print(u"\nValeurs mesurées suivant critères:")
-    for k, v in res.iteritems():
+    print("\nValeurs mesurées suivant critères:")
+    for k, v in res.items():
         comp = compresse(v)
         if not comp.empty:
             comp.index.name = k
             print(comp.to_string(na_rep='', float_format=lambda x: "%.0f" % x))
         else:
-            print(u"\n%s: aucune valeur en dépassement" % k)
+            print("\n%s: aucune valeur en dépassement" % k)
         res_count[k] = v.count()
 
     res_count = pd.DataFrame(res_count).T
-    print(u"Nombre de dépassements des critères:\n")
+    print("Nombre de dépassements des critères:\n")
     print(res_count)
 
 
@@ -657,12 +657,12 @@ def excel_synthese(fct, df, excel_file):
     res_count = dict()
 
     polluant, res = fct(df)
-    print(u"\nTraitement du polluant: %s" % polluant)
+    print("\nTraitement du polluant: %s" % polluant)
 
     writer = pd.ExcelWriter(excel_file)
 
     # Valeurs mesurées suivant critères
-    for i, (k, v) in enumerate(res.iteritems()):
+    for i, (k, v) in enumerate(res.items()):
         comp = compresse(v)
         comp.index.name = k
         comp = comp.apply(pd.np.round)
@@ -670,7 +670,7 @@ def excel_synthese(fct, df, excel_file):
         res_count[k] = v.count()
 
     # Nombre de dépassements des critères
-    name = u"Nombre_de_depassements"
+    name = "Nombre_de_depassements"
     res_count = pd.DataFrame(res_count).T
     res_count.index.name = name
     res_count.to_excel(writer, sheet_name=name)
@@ -700,7 +700,7 @@ def html_synthese(fct, df):
     html += '<p style="text-align:center"><h2>Pour le polluant: {}</h2></p>'.format(polluant)
 
     # On enregistre tous les résultats dans le buffer et on calcule la somme de chaque
-    for k, v in res.iteritems():
+    for k, v in res.items():
         buf.write("<p>")
         comp = compresse(v)
         if not comp.empty:
@@ -710,13 +710,13 @@ def html_synthese(fct, df):
                          na_rep="")
         else:
             buf.write(
-                u'<table border="1" class="dataframe"><thead><tr style="text-align: right;"><th>{}</th><th>Aucun dépassement</th></tr></table>'.format(
+                '<table border="1" class="dataframe"><thead><tr style="text-align: right;"><th>{}</th><th>Aucun dépassement</th></tr></table>'.format(
                     k))
         buf.write("</p>")
         res_count[k] = v.count()
 
     res_count = pd.DataFrame(res_count).T
-    res_count.index.name = u"Nombre de dépassements des critères"
+    res_count.index.name = "Nombre de dépassements des critères"
     html += "<p>"
     html += res_count.to_html(sparsify=True)
     html += "</p>"
