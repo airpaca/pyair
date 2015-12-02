@@ -3,7 +3,7 @@
 
 import os
 from pyair import xair
-from pyair.reg import excel_synthese, o3, so2, no2, pm10
+from pyair.reg import excel_synthese, print_synthese, o3, so2, no2, pm10
 import pandas as pd
 pd.set_option('line_width', 200)
 
@@ -29,8 +29,8 @@ def run():
         df = xr.get_mesures(mes, debut=DEBUT, fin=FIN, freq=freq, brut=False)
         excel_file = os.path.join(PATH, xls_name)
         excel_synthese(fct, df, excel_file)
-        # print_synthese(fct, df)
-    xr.close()
+        print_synthese(fct, df)
+    xr.disconnect()
 
 if __name__ == "__main__":
     run()
