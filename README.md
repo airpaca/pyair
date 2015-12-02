@@ -1,14 +1,13 @@
-===========
-PyAir
-===========
+# PyAir
 
 PyAir provides facilities :
+
     - for the connection to the ISEO XAIR database, and for getting values/informations
     - in the computation of Air Quality values for the French reglementation,
 
 
 
-Typical usage ::
+Typical usage with Python 2.7 or Python 3.x :
 
     #!/usr/bin/env python
 
