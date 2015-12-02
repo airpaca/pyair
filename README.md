@@ -2,8 +2,8 @@
 
 PyAir provides facilities :
 
-    - for the connection to the ISEO XAIR database, and for getting values/informations
-    - in the computation of Air Quality values for the French reglementation,
+ - for the connection to the ISEO XAIR database, and for getting values/informations
+ - in the computation of Air Quality values for the French reglementation,
 
 
 
