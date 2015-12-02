@@ -67,7 +67,7 @@ def to_date(date, dayfirst=False, format=None):
     elif isinstance(date, dt.date):
         return dt.datetime.fromordinal(date.toordinal())
     else:
-        raise ValueError, "Les dates doivent être de type None, str, datetime.date ou datetime.datetime"
+        raise ValueError("Les dates doivent être de type None, str, datetime.date ou datetime.datetime")
 
 
 def _format(noms):
@@ -139,9 +139,9 @@ class XAIR:
             self.conn = cx_Oracle.connect(self._ORA_FULL)
             self.cursor = self.conn.cursor()
             print('XAIR: Connexion établie')
-        except cx_Oracle.Error, e:
-            print "Erreur: %s" % (e)
-            raise cx_Oracle.Error, 'Echec de connexion'
+        except cx_Oracle.Error as e:
+            print("Erreur: %s" % (e))
+            raise cx_Oracle.Error('Echec de connexion')
 
     def reconnect(self):
         self._connect()
@@ -426,7 +426,7 @@ class XAIR:
             champ_code = 'A_ETAT'
             table = 'MOIS'
         else:
-            raise ValueError, "freq doit être T, H, D, M ou A"
+            raise ValueError("freq doit être T, H, D, M ou A")
 
         if table == 'JOURNALIER':
             champ_date = 'J_DATE'
@@ -496,7 +496,7 @@ class XAIR:
         etats = etats.unstack('id')
         etats.fillna(value=MISSING_CODE * diviseur, inplace=True)
         etats = etats.sum(axis=0)
-        etats = pd.DataFrame(zip(*etats.apply(list)))
+        etats = pd.DataFrame(list(zip(*etats.apply(list))))
         etats.index = df.index
         etats.columns = df.columns
 
@@ -660,9 +660,9 @@ class XAIR:
 
 
 if __name__ == "__main__":
-    u = raw_input("Enter your XAIR user name: ")
-    p = raw_input("Enter your XAIR password: ")
-    a = raw_input("Enter your XAIR database adress: ")
+    u = input("Enter your XAIR user name: ")
+    p = input("Enter your XAIR password: ")
+    a = input("Enter your XAIR database adress: ")
 
     xr = XAIR(user=u, pwd=p, adr=a)
     mes = xr.liste_mesures(reseau='OZONE').MESURE

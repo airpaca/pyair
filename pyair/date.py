@@ -25,7 +25,7 @@ def _get_funky(func):
         try:
             func = getattr(np, func)
         except:
-            raise NameError, u"Nom de fonction non comprise"
+            raise NameError("Nom de fonction non comprise")
     return func
 
 
@@ -92,7 +92,7 @@ def strtime_help():
     Print a help message on the time strptime format
     """
 
-    print """
+    print("""
 %a  Locale's abbreviated weekday name.
 %A  Locale's full weekday name.
 %b  Locale's abbreviated month name.
@@ -115,7 +115,7 @@ def strtime_help():
 %Y  Year with century as a decimal number.
 %Z  Time zone name (no characters if no time zone exists).
 %%  A literal "%" character.
-"""
+""")
 
 
 
