@@ -30,12 +30,28 @@ print("testing with %s configuration file..." % fncfg)
 
 
 class TestXAIR(unittest.TestCase):
+    def get_stdout(self):
+        """ Get Stdout.
+        Returns: string.
+        """
+        sys.stdout.seek(0)  # rewind
+        return sys.stdout.read()  # return stdout
+
     def setUp(self):
         self.saved_stdout = sys.stdout  # save stdout
         sys.stdout = six.StringIO()
 
     def tearDown(self):
         sys.stdout = self.saved_stdout  # restore stdout
+
+    def test_connexion(self):
+        """ Test de la connexion au serveur.
+        """
+        xr = xair.XAIR(user=cfg['xair']['user'], pwd=cfg['xair']['pwd'], adr=cfg['xair']['adr'])
+        xr.disconnect()
+        stdout = self.get_stdout()
+        self.assertTrue('XAIR: Connexion établie' in stdout)
+        self.assertTrue('XAIR: Connexion fermée' in stdout)
 
     def test_print_synthese(self):
         """ Test l'affichage des synthèses: vérification des informations statiques.
@@ -51,10 +67,7 @@ class TestXAIR(unittest.TestCase):
         xr.disconnect()
 
         # Analyse du traitement
-        sys.stdout.seek(0)
-        stdout = sys.stdout.read()
-        self.assertTrue('XAIR: Connexion établie' in stdout)
-        self.assertTrue('XAIR: Connexion fermée' in stdout)
+        stdout = self.get_stdout()
         for pol in [k for e in cfg['mes'] for k in e.keys()]:
             self.assertTrue('Pour le polluant: %s' % pol in stdout)
 
