@@ -1,0 +1,17 @@
+{
+  "debut": "2015-01-01",
+  "fin": "2015-12-31",
+  "xair": {
+    "user": "xx",
+    "pwd": "xx",
+    "adr": "192.168.1.1"
+  },
+  "excel_path": "/tmp",
+  "mes": [
+    {"SO2": ["S2xxxx", "S2xxxx"]},
+    {"NO2": ["N2xxxx", "N2xxxx", "N2xxxx", "N2xxxx"]},
+    {"PM10": ["BDxxxx", "PCxxxx", "PCxxxx", "PCxxxx"]},
+    {"O3": ["O3xxxx", "O3xxx", "O3xxxx", "O3xxxx", "O3xxxx"]}
+  ]
+}
+

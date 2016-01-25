@@ -1,36 +1,81 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
+"""
+
+Test de `pyair` avec une configuration spéficique.
+Un fichier de configuration au format JSON doit être préparer sur le modèle du fichier `config-test.json`.
+La variable d'environnement `CFG_PYAIR_TEST` peut être définit pour l'utilisation d'un fichier spécifique.
+
+"""
+
+
 import os
+import json
+import six
+import sys
+import unittest
 from pyair import xair
-from pyair.reg import excel_synthese, print_synthese, o3, so2, no2, pm10
+from pyair.reg import excel_synthese, print_synthese
 import pandas as pd
-pd.set_option('line_width', 200)
+pd.set_option('display.width', 200)
 
 
-DEBUT = '2012-01-01'
-FIN = '2012-12-31'
-USER = 'XXXXX'
-PWD = 'XXXXX'
-ADR = '192.168.1.1'
-PATH = '/tmp/'  # chemin où enregistrer les fichiers excel
-
-MES = [
-    [so2, ['SO2_FO', 'SO2_GA', 'SO2_IP', 'SO2_PR'], 'H', 'reg_SO2.xls'],
-    [no2, ['NO2_AINE', 'NO2_DA', 'NO2_FO', 'NO2_HU', 'NO2_IP', 'NO2_NI', 'NO2_PR', 'NO2_VI'], 'H', 'reg_NO2.xls'],
-    [pm10, ['PSC_AI', 'PSC_DA', 'PSC_FO', 'PSC_GA', 'PSC_HU', 'PSC_IP', 'PSC_NI', 'PSC_PR', 'PSC_IP'], 'D', 'reg_PM10.xls'],
-    [o3, ['O3_DA', 'O3_FON', 'O3_GAR', 'O3_HUG', 'O3_MER', 'O3_NI', 'O3_PRE'], 'H', 'reg_O3.xls'],
-]
+# Load configuration file
+fncfg = os.environ['CFG_PYAIR_TEST'] \
+    if 'CFG_PYAIR_TEST' \
+    else os.path.join(os.path.dirname(__file__), 'config-test.json')
+cfg = json.load(open(fncfg))
+print("testing with %s configuration file..." % fncfg)
 
 
-def run():
-    xr = xair.XAIR(user=USER, pwd=PWD, adr=ADR)
-    for fct, mes, freq, xls_name in MES:
-        df = xr.get_mesures(mes, debut=DEBUT, fin=FIN, freq=freq, brut=False)
-        excel_file = os.path.join(PATH, xls_name)
-        excel_synthese(fct, df, excel_file)
-        print_synthese(fct, df)
-    xr.disconnect()
+class TestXAIR(unittest.TestCase):
+    def setUp(self):
+        self.saved_stdout = sys.stdout  # save stdout
+        sys.stdout = six.StringIO()
+
+    def tearDown(self):
+        sys.stdout = self.saved_stdout  # restore stdout
+
+    def test_print_synthese(self):
+        """ Test l'affichage des synthèses: vérification des informations statiques.
+        """
+        # Traitement
+        xr = xair.XAIR(user=cfg['xair']['user'], pwd=cfg['xair']['pwd'], adr=cfg['xair']['adr'])
+        for mesures in cfg['mes']:
+            pol, mes = list(mesures.items())[0]
+            fct = getattr(__import__('pyair.reg', fromlist=[pol.lower()]), pol.lower())  # import function
+            freq = 'D' if pol in ['PM10', ] else 'H'
+            df = xr.get_mesures(mes, debut=cfg['debut'], fin=cfg['fin'], freq=freq, brut=False)
+            print_synthese(fct, df)
+        xr.disconnect()
+
+        # Analyse du traitement
+        sys.stdout.seek(0)
+        stdout = sys.stdout.read()
+        self.assertTrue('XAIR: Connexion établie' in stdout)
+        self.assertTrue('XAIR: Connexion fermée' in stdout)
+        for pol in [k for e in cfg['mes'] for k in e.keys()]:
+            self.assertTrue('Pour le polluant: %s' % pol in stdout)
+
+    def test_synthese_excel(self):
+        """ Test la création de fichier de synthèses au format Excel: vérification de la présence des fichiers
+        """
+        xr = xair.XAIR(user=cfg['xair']['user'], pwd=cfg['xair']['pwd'], adr=cfg['xair']['adr'])
+        for mesures in cfg['mes']:
+            pol, mes = list(mesures.items())[0]
+            fct = getattr(__import__('pyair.reg', fromlist=[pol.lower()]), pol.lower())  # import function
+            freq = 'D' if pol in ['PM10', ] else 'H'
+
+            xls = os.path.join(cfg['excel_path'], 'stat_%s.xls' % pol)
+            if os.path.isfile(xls):
+                os.remove(xls)  # remove old file
+
+            df = xr.get_mesures(mes, debut=cfg['debut'], fin=cfg['fin'], freq=freq, brut=False)
+            excel_synthese(fct, df, xls)
+            self.assertTrue(os.path.isfile(xls))
+        xr.disconnect()
+
 
 if __name__ == "__main__":
-    run()
+    unittest.main()

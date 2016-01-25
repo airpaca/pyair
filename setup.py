@@ -14,6 +14,6 @@ setup(
     - exploit these informations : compute statistics and compare to the French Air Reglementation.
     It's primary goal is to serve French professionnals air quality studies departments""",
     keywords="air quality xair iseo french reglementation statistics",
-    install_requires=['pandas', 'cx_oracle', ],
+    install_requires=['pandas', 'cx_oracle', 'six'],
 
 )
