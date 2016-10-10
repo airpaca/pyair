@@ -124,8 +124,9 @@ class XAIR:
     m.describe()
     """
 
-    def __init__(self, user, pwd, adr, port=1521, base='N', initial_connect=True):
+    def __init__(self, user, pwd, adr, port=1521, base='N', initial_connect=True, verbose=False):
         self._ORA_FULL = "{0}/{1}@{2}:{3}/{4}".format(user, pwd, adr, port, base)
+        self.verbose = verbose
         if initial_connect:
             self._connect()
 
@@ -138,9 +139,10 @@ class XAIR:
             # On passe par Oracle Instant Client avec le TNS ORA_FULL
             self.conn = cx_Oracle.connect(self._ORA_FULL)
             self.cursor = self.conn.cursor()
-            print('XAIR: Connexion établie')
+            if self.verbose:
+                print('XAIR: Connexion établie')
         except cx_Oracle.Error as e:
-            print("Erreur: %s" % (e))
+            sys.stderr.write("Erreur: %s\n" % (e))
             raise cx_Oracle.Error('Echec de connexion')
 
     def reconnect(self):
@@ -155,7 +157,8 @@ class XAIR:
     def _close(self):
         self.cursor.close()
         self.conn.close()
-        print('XAIR: Connexion fermée')
+        if self.verbose:
+            print('XAIR: Connexion fermée')
 
     def liste_parametres(self, parametre=None):
         """

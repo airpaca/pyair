@@ -8,12 +8,13 @@ from . import stats
 from . import xair
 
 
-__version__ = "3.2.1"
+__version__ = "3.2.2"
 __author__ = "Lionel Roubeyrie"
 __email__ = "lroubeyrie@limair.asso.fr"
 __all__ = ['date', 'reg', 'stats', 'xair']
 __license__ = "GPL"
 __changes__ = {
+    '3.2.2': """- Ajout de l'option verbose.""",
     '3.2.1': """- Ajout du code public des stations.""",
     '3.2.0': """- Compatibilité avec Python 3.x""",
     '3.1.0': """- Evolution de la méthode 'list_mesures' pour la prise en compte des différentes critères de sélection des mesures.""",
