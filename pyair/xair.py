@@ -263,6 +263,7 @@ class XAIR:
         select = ""
         if detail:
             select = """,
+            TO_CHAR(NSIT_PUBLIC, '99999') AS NUMERO_PUBLIC,
             ISIT AS DESCRIPTION,
             NO_TELEPHONE AS TELEPHONE,
             ADRESSE_IP,
