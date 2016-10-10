@@ -5,7 +5,7 @@ setup(
     version='3.2.2',
     packages=find_packages(exclude=['docs', 'tests*']),
     url='https://github.com/LionelR/pyair',
-    license='BSD',
+    license='MIT',
     author='Lionel Roubeyrie',
     author_email='lroubeyrie@limair.asso.fr',
     description='For working with French air quality data and the Iseo XAIR database',
