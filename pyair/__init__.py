@@ -8,12 +8,13 @@ from . import stats
 from . import xair
 
 
-__version__ = "3.2.2"
+__version__ = "3.2.3"
 __author__ = "Lionel Roubeyrie"
 __email__ = "lroubeyrie@limair.asso.fr"
 __all__ = ['date', 'reg', 'stats', 'xair']
 __license__ = "GPL"
 __changes__ = {
+    '3.2.3': """- Correction bug pour extraction avec des fréquences différentes de l'horaire.""",
     '3.2.2': """- Ajout de l'option verbose.""",
     '3.2.1': """- Ajout du code public des stations.""",
     '3.2.0': """- Compatibilité avec Python 3.x""",
