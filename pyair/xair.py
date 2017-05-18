@@ -7,6 +7,7 @@
 Module de connexion et de récupération de données sur une base XAIR
 """
 
+import sys
 import cx_Oracle
 import pandas as pd
 import pandas.io.sql as psql
@@ -375,13 +376,13 @@ class XAIR:
             if freq == 'T' or freq == '15T':
                 f = pd.tseries.offsets.Minute
                 decalage = 15
-            if freq == 'H':
+            elif freq == 'H':
                 f = pd.tseries.offsets.Hour
-            if freq == 'D':
+            elif freq == 'D':
                 f = pd.tseries.offsets.Day
-            if freq == 'M':
+            elif freq == 'M':
                 f = pd.tseries.offsets.MonthBegin
-            if freq == 'A':
+            elif freq == 'A':
                 f = pd.tseries.offsets.YearBegin
             else:
                 f = pd.tseries.offsets.Hour

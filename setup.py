@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyair',
-    version='3.2.2',
+    version='3.2.3',
     packages=find_packages(exclude=['docs', 'tests*']),
     url='https://github.com/LionelR/pyair',
     license='MIT',
